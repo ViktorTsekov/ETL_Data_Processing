@@ -19,6 +19,7 @@ import azure.functions as func
 from pymongo import MongoClient
 from numpyencoder import NumpyEncoder
 from base64 import b64decode, b64encode
+from datetime import datetime
 from ConnectionString import *
 
 def uncompress_samples(b64_str):
@@ -46,6 +47,13 @@ def packed_dict_to_list(packed_dict):
         list_samples += [sample]
         
     return list_samples
+
+def decrypt_tstamp(tstamp):
+    ts = int(tstamp)
+    ts = ts / 1000
+    ts = datetime.utcfromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
+    
+    return ts
 
 def main(name: str) -> str:
     #Mongo database attributes
@@ -109,8 +117,10 @@ def main(name: str) -> str:
             ecg3 = sample.get('ecg3')
             ecg4 = sample.get('ecg4')
             ecg5 = sample.get('ecg5')
-            
-            samplesQuery = "INSERT INTO ECG_Raw(ecg_1, ecg_2, ecg_3, ecg_4, ecg_5, tstamp, property_ID) VALUES(%f, %f, %f, %f, %f, '%s', %d)" % (ecg1, ecg2, ecg3, ecg4, ecg5, tstamp, propertyID)
+
+            tstampDecrypted = decrypt_tstamp(tstamp)
+
+            samplesQuery = "INSERT INTO ECG_Raw(ecg_1, ecg_2, ecg_3, ecg_4, ecg_5, tstamp, property_ID) VALUES(%f, %f, %f, %f, %f, '%s', %d)" % (ecg1, ecg2, ecg3, ecg4, ecg5, tstampDecrypted, propertyID)
             cursor.execute(samplesQuery)
 
     db.commit()

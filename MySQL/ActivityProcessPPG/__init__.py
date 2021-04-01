@@ -19,6 +19,7 @@ import azure.functions as func
 from pymongo import MongoClient
 from numpyencoder import NumpyEncoder
 from base64 import b64decode, b64encode
+from datetime import datetime
 from ConnectionString import *
 
 def uncompress_samples(b64_str):
@@ -46,6 +47,13 @@ def packed_dict_to_list(packed_dict):
         list_samples += [sample]
         
     return list_samples
+
+def decrypt_tstamp(tstamp):
+    ts = int(tstamp)
+    ts = ts / 1000
+    ts = datetime.utcfromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
+    
+    return ts
 
 def main(name: str) -> str:
     #Mongo database attributes
@@ -111,7 +119,9 @@ def main(name: str) -> str:
             rla_2 = sample.get('rla2')
             rlb_2 = sample.get('rlb2')
 
-            samplesQuery = "INSERT INTO PPG_Processed(gla_2, glb_2, ira_2, irb_2, rla_2, rlb_2, tstamp, property_ID) VALUES(%f, %f, %f, %f, %f, %f, '%s', %d)" % (gla_2, glb_2, ira_2, irb_2, rla_2, rlb_2, tstamp, propertyID)
+            tstampDecrypted = decrypt_tstamp(tstamp)
+
+            samplesQuery = "INSERT INTO PPG_Processed(gla_2, glb_2, ira_2, irb_2, rla_2, rlb_2, tstamp, property_ID) VALUES(%f, %f, %f, %f, %f, %f, '%s', %d)" % (gla_2, glb_2, ira_2, irb_2, rla_2, rlb_2, tstampDecrypted, propertyID)
             cursor.execute(samplesQuery)
 
     db.commit()
