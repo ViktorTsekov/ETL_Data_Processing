@@ -5,5 +5,5 @@
   "azureFunctions.projectLanguage": "Python",
   "azureFunctions.projectRuntime": "~3",
   "debug.internalConsoleOptions": "neverOpen",
-  "python.pythonPath": "c:\\Users\\vtsek\\Documents\\GitHub\\ETL_Data_Processing\\MySQL\\.env\\Scripts\\python.exe"
+  "python.pythonPath": ".env\\Scripts\\python.exe"
 }

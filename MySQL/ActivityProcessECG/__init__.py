@@ -14,8 +14,6 @@ import pymongo
 import numpyencoder
 import mysql.connector
 
-import azure.functions as func
-
 from pymongo import MongoClient
 from numpyencoder import NumpyEncoder
 from base64 import b64decode, b64encode

@@ -10,7 +10,7 @@ import pyodbc
 import mysql.connector
 
 import azure.functions as func
-import azure.durable_functions as df
+import azure.durable_functions as dfclear
 
 from ConnectionString import *
 

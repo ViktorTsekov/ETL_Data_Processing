@@ -1,0 +1,9 @@
+azure-functions
+azure-functions-durable
+azure.cli.core
+azure.servicebus
+pyodbc
+pymongo
+numpyencoder
+mysql.connector
+datetime
