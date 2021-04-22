@@ -1,10 +1,12 @@
+import json
+
 from azure.servicebus import ServiceBusClient, ServiceBusMessage
 
 CONNECTION_STR = "Endpoint=sb://kymira-servicebus-test.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=ue1/RTffDJRWKUJITE5kHy8ik7MvlbGM/WkJcr59E0U="
 TOPIC_NAME = "testtopic"
 
 def send_single_message(sender):
-    message = ServiceBusMessage("Single Message")
+    message = ServiceBusMessage(json.dumps({"Message": "Test Message"}))
     sender.send_messages(message)
     print("Sent a single message")
 
@@ -31,7 +33,8 @@ servicebus_client = ServiceBusClient.from_connection_string(conn_str=CONNECTION_
 with servicebus_client:
     sender = servicebus_client.get_topic_sender(topic_name=TOPIC_NAME)
     with sender:
-        send_single_message(sender)
+        for i in range(16):
+            send_single_message(sender)
 
 print("Done sending messages")
 print("-----------------------")
