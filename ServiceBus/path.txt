@@ -1,1 +1,0 @@
-C:\Users\vtsek\Documents\GitHub\ETL_Data_Processing\ServiceBus\.gosho\Lib\site-packages
