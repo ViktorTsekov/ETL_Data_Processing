@@ -1,0 +1,1 @@
+C:\Users\vtsek\Documents\Github\ETL_Data_Processing\ServiceBusTest\.venv\Lib\site-packages

@@ -48,11 +48,8 @@ void readPackages() {
 	    exit(1);
 	}
 	
-	indata >> line;
-	
-	while (!indata.eof()) { 
+	while(getline(indata, line)) { 
 	    packages.push_back(line);
-	    indata >> line;
 	}
   	 
 	indata.close();
@@ -76,7 +73,8 @@ int main() {
 	readPackages();
 	installPackages();
 
-	cout << "\nProcess Complete";
+	cout << "\nProcess Complete\n";
+	system("pause");
 	
 	return 0;
 }

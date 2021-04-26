@@ -3,7 +3,6 @@ import json
 
 import azure.functions as func
 
-
 def main(message: func.ServiceBusMessage):
     # Log the Service Bus Message as plaintext
 
