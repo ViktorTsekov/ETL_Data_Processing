@@ -1,48 +1,40 @@
 import json
+import time
 
 from azure.servicebus import ServiceBusClient, ServiceBusMessage
 
 CONNECTION_STR = "Endpoint=sb://kymira-servicebus-test.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=ue1/RTffDJRWKUJITE5kHy8ik7MvlbGM/WkJcr59E0U="
 TOPIC_NAME = "testtopic"
 
+json_object = {'_id': '60102d7e41abc017b7b684c4', 
+               'packet_info': {
+                    'tstamp': 1611672897472, 
+                    'id': 'JOLHAp3j', 
+                    'device': 'tim_6-lead-ecg', 
+                    'buffer_size': 5, 
+                    'sample_rate': 500, 
+                    'sensor_type': 'ecg', 
+                    'content_type': 'dict', 
+                    'compressed': 'true', 
+                    'content-type': 'list-of-dict', 
+                    'data-type': 'ecg-raw'
+                }, 
+                'samples': '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'
+                }
+
 def send_single_message(sender):
-    message = ServiceBusMessage(json.dumps({"Message": "Test Message"}))
+    message = ServiceBusMessage(json.dumps(json_object))
     sender.send_messages(message)
     print("Sent a single message")
-
-def send_a_list_of_messages(sender):
-    messages = [ServiceBusMessage("Message in list") for _ in range(5)]
-    sender.send_messages(messages)
-    print("Sent a list of 5 messages")
-
-def send_batch_message(sender):
-    batch_message = sender.create_message_batch()
-    for _ in range(10):
-        try:
-            batch_message.add_message(ServiceBusMessage("Message inside a ServiceBusMessageBatch"))
-        except ValueError:
-            # ServiceBusMessageBatch object reaches max_size.
-            # New ServiceBusMessageBatch object can be created here to send more data.
-            break
-    sender.send_messages(batch_message)
-    print("Sent a batch of 10 messages")
-
 
 servicebus_client = ServiceBusClient.from_connection_string(conn_str=CONNECTION_STR, logging_enable=True)
 
 with servicebus_client:
     sender = servicebus_client.get_topic_sender(topic_name=TOPIC_NAME)
     with sender:
-        for i in range(16):
+        for i in range(10):
             send_single_message(sender)
+            time.sleep(1)
 
 print("Done sending messages")
 print("-----------------------")
-"""
-with servicebus_client:
-    receiver = servicebus_client.get_queue_receiver(topic_name=TOPIC_NAME, max_wait_time=5)
-    with receiver:
-        for msg in receiver:
-            print("Received: " + str(msg))
-            receiver.complete_message(msg)
-"""

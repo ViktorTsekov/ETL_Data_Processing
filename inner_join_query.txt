@@ -1,0 +1,5 @@
+SELECT *
+FROM ecg_raw
+INNER JOIN data_properties 
+    ON data_properties.id = ecg_raw.property_id
+ORDER BY id;

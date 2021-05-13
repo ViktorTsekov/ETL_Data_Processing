@@ -18,7 +18,7 @@ from pymongo import MongoClient
 from numpyencoder import NumpyEncoder
 from base64 import b64decode, b64encode
 from datetime import datetime
-from ConnectionString import *
+from . ConnectionString import *
 
 def uncompress_samples(b64_str):
     try:
