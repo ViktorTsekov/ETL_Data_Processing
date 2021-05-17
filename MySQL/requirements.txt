@@ -1,8 +1,0 @@
-azure-functions
-azure-functions-durable
-azure.cli.core
-pyodbc
-pymongo
-numpyencoder
-mysql.connector
-datetime

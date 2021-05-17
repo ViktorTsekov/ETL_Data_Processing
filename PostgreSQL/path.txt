@@ -1,0 +1,1 @@
+C:\Users\vtsek\Documents\Github\ETL_Data_Processing\MySQL\.venv\Lib\site-packages
