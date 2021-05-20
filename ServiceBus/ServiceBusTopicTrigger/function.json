@@ -6,8 +6,8 @@
       "name": "message",
       "type": "serviceBusTrigger",
       "direction": "in",
-      "topicName": "testtopic",
-      "subscriptionName": "testsubscription",
+      "topicName": "ecg",
+      "subscriptionName": "ecg-data-research",
       "connection": "kymiraservicebustest_SERVICEBUS"
     }
   ]

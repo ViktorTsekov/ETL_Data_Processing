@@ -28,12 +28,12 @@ def main(message: func.ServiceBusMessage):
     sensor_type = json_dict["packet_info"]["sensor_type"]
     content_type = json_dict["packet_info"]["content_type"]
     compressed = json_dict["packet_info"]["compressed"]
-    content = json_dict["packet_info"]["content-type"]
-    data_type = json_dict["packet_info"]["data-type"]
+    #content = json_dict["packet_info"]["content-type"]
+    #data_type = json_dict["packet_info"]["data-type"]
     property_id = 0
 
     #Populate the properties table
-    property_query = "INSERT INTO data_properties(device, buffer_size, sample_rate, sensor_type, content_type, compressed, content, data_type) VALUES('%s', %d, %d, '%s', '%s', '%s', '%s', '%s')" % (device, buffer_size, sample_rate, sensor_type, content_type, compressed, content, data_type)
+    property_query = "INSERT INTO data_properties(device, buffer_size, sample_rate, sensor_type, content_type, compressed, content, data_type) VALUES('%s', %d, %d, '%s', '%s', '%s', '%s', '%s')" % (device, buffer_size, sample_rate, sensor_type, content_type, compressed, content_type, ' ')
     cursor.execute(property_query)
 
     #Retrieve the property id of the newest entry
