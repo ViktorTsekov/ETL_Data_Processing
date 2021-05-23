@@ -15,9 +15,9 @@ from . PackageTools import *
 
 def main(name: str) -> str:
     #Mongo database attributes
-    cluster = MongoClient('mongodb://kymetric-data-db:V1csLEVTjrLcHL90q7kw22BJn35kiJEkLlC8ffBENzv1HZQUwUBzQsRbxLQppzH8LsZzqwizpKA1O4tSprGBHQ==@kymetric-data-db.mongo.cosmos.azure.com:10255/?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=@kymetric-data-db@')
-    db = cluster['kymetric-hub-dd']
-    collection = db['tim_6-lead-ecg_ecg-raw']
+    cluster = MongoClient('mongodb://devtest-db:LKqCyxHxYRKA39Pis7lUGLX0cnUXzMwzXeU8vzzk9aVwf1MF6pXIhx1URdvMJmSc3kZBHJHXRumSjkvjAk77rQ==@devtest-db.mongo.cosmos.azure.com:10255/?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=@devtest-db@')
+    db = cluster['dev-kymetric-db']
+    collection = db['debug_device_ecg-raw']
 
     #SQL database attributes
     db = getDatabaseConnection()
@@ -47,19 +47,20 @@ def main(name: str) -> str:
         tstamp = packetInfo.get("tstamp")
         tstampDecrypted = decrypt_tstamp(tstamp)
         device = packetInfo.get("device")
+        device = str(device).replace('-', '_')
         bufferSize = packetInfo.get("buffer_size")
         sampleRate = packetInfo.get("sample_rate")
         sensorType = packetInfo.get("sensor_type")
         contentType = packetInfo.get("content_type")
         compressed = packetInfo.get("compressed")
-        content = packetInfo.get("content-type")
-        dataType = packetInfo.get("data-type")
+        #content = packetInfo.get("content-type")
+        #dataType = packetInfo.get("data-type")
         
         #Populate the data properties table
         if count ==  0:
             count = count + 1
 
-            propertiesQuery = "INSERT INTO data_properties(device, buffer_size, sample_rate, sensor_type, content_type, compressed, content, data_type) VALUES('%s', %d, %d, '%s', '%s', '%s', '%s', '%s')" % (device, bufferSize, sampleRate, sensorType, contentType, compressed, content, dataType)
+            propertiesQuery = "INSERT INTO data_properties(device, buffer_size, sample_rate, sensor_type, content_type, compressed, content, data_type) VALUES('%s', %d, %d, '%s', '%s', '%s', '%s', '%s')" % (device, bufferSize, sampleRate, sensorType, contentType, compressed, contentType, ' ')
             cursor.execute(propertiesQuery)
 
             cursor.execute("SELECT MAX(ID) FROM data_properties")
@@ -74,6 +75,10 @@ def main(name: str) -> str:
         if(tstampObject >= startTimestamp and tstampObject <= endTimestamp):
             samplesPackedDict = uncompress_samples(samples)
             samplesList = packed_dict_to_list(samplesPackedDict)
+
+            #Create the new samples table
+            tableCreationQuery = "CREATE TABLE IF NOT EXISTS %s(ecg_1 FLOAT, ecg_2 FLOAT, ecg_3 FLOAT, ecg_4 FLOAT, ecg_5 FLOAT, tstamp TIMESTAMP, property_ID INTEGER)" % (device)
+            cursor.execute(tableCreationQuery)
             
             #Populate the samples table
             for sample in samplesList:
@@ -83,7 +88,9 @@ def main(name: str) -> str:
                 ecg4 = sample.get('ecg4')
                 ecg5 = sample.get('ecg5')
 
-                samplesQuery = "INSERT INTO ecg_raw(ecg_1, ecg_2, ecg_3, ecg_4, ecg_5, tstamp, property_ID) VALUES(%f, %f, %f, %f, %f, '%s', %d)" % (ecg1, ecg2, ecg3, ecg4, ecg5, tstampDecrypted, propertyID)
+                count = count + 1
+
+                samplesQuery = "INSERT INTO %s(ecg_1, ecg_2, ecg_3, ecg_4, ecg_5, tstamp, property_ID) VALUES(%f, %f, %f, %f, %f, '%s', %d)" % (device, ecg1, ecg2, ecg3, ecg4, ecg5, tstampDecrypted, propertyID)
                 cursor.execute(samplesQuery)
 
     #Close the connection
@@ -91,4 +98,6 @@ def main(name: str) -> str:
     cursor.close()
     db.close()
     
-    return "Activity ProcessECG Finished"
+    message = "Activity ProcessECG Finished. Entries Processed: %d" % (count)
+
+    return message
