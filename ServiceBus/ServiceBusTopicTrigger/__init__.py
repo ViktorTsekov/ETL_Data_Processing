@@ -33,7 +33,7 @@ def main(message: func.ServiceBusMessage):
     #data_type = json_dict["packet_info"]["data-type"]
     property_id = 0
 
-    if(device.find('ECG') != -1):
+    if(device.find('DSR') != -1 or device.find('dsr') != -1):
         #Populate the properties table
         property_query = "INSERT INTO data_properties(device, buffer_size, sample_rate, sensor_type, content_type, compressed, content, data_type) VALUES('%s', %d, %d, '%s', '%s', '%s', '%s', '%s')" % (device, buffer_size, sample_rate, sensor_type, content_type, compressed, content_type, ' ')
         cursor.execute(property_query)
