@@ -18,7 +18,6 @@ def main(message: func.ServiceBusMessage):
     #Get the attributes from the data package
     json_dict = json.loads(message_body)
 
-    packet_info = json_dict["packet_info"]
     samples = json_dict["samples"]
     tstamp = json_dict["packet_info"]["tstamp"]
     id = json_dict["packet_info"]["id"]
@@ -51,7 +50,7 @@ def main(message: func.ServiceBusMessage):
         tstamp_decrypted = decrypt_tstamp(tstamp)
 
         #Create the new samples table
-        tableCreationQuery = "CREATE TABLE IF NOT EXISTS %s(ecg_1 FLOAT, ecg_2 FLOAT, ecg_3 FLOAT, ecg_4 FLOAT, ecg_5 FLOAT, tstamp TIMESTAMP, property_ID INTEGER)" % (device)
+        tableCreationQuery = "CREATE TABLE IF NOT EXISTS %s(id VARCHAR(255), ecg_1 FLOAT, ecg_2 FLOAT, ecg_3 FLOAT, ecg_4 FLOAT, ecg_5 FLOAT, tstamp TIMESTAMP, property_ID INTEGER)" % (device)
         cursor.execute(tableCreationQuery)
 
         #Populate the samples table
@@ -62,7 +61,7 @@ def main(message: func.ServiceBusMessage):
             ecg4 = sample.get('ecg4')
             ecg5 = sample.get('ecg5')
 
-            samples_query = "INSERT INTO %s(ecg_1, ecg_2, ecg_3, ecg_4, ecg_5, tstamp, property_ID) VALUES(%f, %f, %f, %f, %f, '%s', %d)" % (device, ecg1, ecg2, ecg3, ecg4, ecg5, tstamp_decrypted, property_id)
+            samples_query = "INSERT INTO %s(id, ecg_1, ecg_2, ecg_3, ecg_4, ecg_5, tstamp, property_ID) VALUES('%s', %f, %f, %f, %f, %f, '%s', %d)" % (device, id, ecg1, ecg2, ecg3, ecg4, ecg5, tstamp_decrypted, property_id)
             cursor.execute(samples_query)
 
     #Close the connection

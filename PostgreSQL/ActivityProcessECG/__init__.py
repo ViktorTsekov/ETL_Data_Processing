@@ -44,6 +44,7 @@ def main(name: str) -> str:
         packetInfo = result.get("packet_info")
         samples = result.get("samples")
         
+        id = packetInfo.get("id")
         tstamp = packetInfo.get("tstamp")
         tstampDecrypted = decrypt_tstamp(tstamp)
         device = packetInfo.get("device")
@@ -77,7 +78,7 @@ def main(name: str) -> str:
             samplesList = packed_dict_to_list(samplesPackedDict)
 
             #Create the new samples table
-            tableCreationQuery = "CREATE TABLE IF NOT EXISTS %s(ecg_1 FLOAT, ecg_2 FLOAT, ecg_3 FLOAT, ecg_4 FLOAT, ecg_5 FLOAT, tstamp TIMESTAMP, property_ID INTEGER)" % (device)
+            tableCreationQuery = "CREATE TABLE IF NOT EXISTS %s(id VARCHAR(255), ecg_1 FLOAT, ecg_2 FLOAT, ecg_3 FLOAT, ecg_4 FLOAT, ecg_5 FLOAT, tstamp TIMESTAMP, property_ID INTEGER)" % (device)
             cursor.execute(tableCreationQuery)
             
             #Populate the samples table
@@ -90,7 +91,7 @@ def main(name: str) -> str:
 
                 count = count + 1
 
-                samplesQuery = "INSERT INTO %s(ecg_1, ecg_2, ecg_3, ecg_4, ecg_5, tstamp, property_ID) VALUES(%f, %f, %f, %f, %f, '%s', %d)" % (device, ecg1, ecg2, ecg3, ecg4, ecg5, tstampDecrypted, propertyID)
+                samplesQuery = "INSERT INTO %s(id, ecg_1, ecg_2, ecg_3, ecg_4, ecg_5, tstamp, property_ID) VALUES('%s', %f, %f, %f, %f, %f, '%s', %d)" % (device, id, ecg1, ecg2, ecg3, ecg4, ecg5, tstampDecrypted, propertyID)
                 cursor.execute(samplesQuery)
 
     #Close the connection
@@ -98,6 +99,6 @@ def main(name: str) -> str:
     cursor.close()
     db.close()
     
-    message = "Activity ProcessECG Finished. Entries Processed: %d" % (count)
+    message = "Activity ProcessECG Finished"
 
     return message
